@@ -3,1087 +3,1024 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure AI Assistant</title>
+    <title>DeepSeek AI Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #e0e0e0; }
-        
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary-color: #10a37f;
+            --primary-dark: #0d8a6a;
+            --bg-color: #ffffff;
+            --sidebar-bg: #f7f7f8;
+            --chat-bg: #ffffff;
+            --text-primary: #202123;
+            --text-secondary: #565869;
+            --border-color: #e5e5e7;
+            --message-user-bg: #f7f7f8;
+            --message-ai-bg: #ffffff;
+            --shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode {
+            --primary-color: #10a37f;
+            --primary-dark: #0d8a6a;
+            --bg-color: #343541;
+            --sidebar-bg: #202123;
+            --chat-bg: #343541;
+            --text-primary: #ececf1;
+            --text-secondary: #acacbe;
+            --border-color: #4d4d4f;
+            --message-user-bg: #444654;
+            --message-ai-bg: #444654;
+            --shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             height: 100vh;
-            display: flex;
-            background: #0f1525;
-            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: background-color 0.3s, color 0.3s;
         }
-        
-        /* Sidebar */
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
         .sidebar {
-            width: 280px;
-            background: #131b2e;
-            border-right: 1px solid #1e293b;
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 25px 20px;
+            transition: transform 0.3s ease;
+            z-index: 10;
         }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #1e293b;
-        }
-        
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .brand-text h1 { font-size: 18px; color: #fff; }
-        .brand-text p { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-        
-        /* Token Monitor */
-        .token-monitor {
-            background: #1e293b;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid #334155;
-        }
-        
-        .monitor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .monitor-title {
-            font-size: 14px;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .token-counter {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .token-progress {
-            height: 6px;
-            background: #334155;
-            border-radius: 3px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            width: 0%;
-            transition: width 0.5s;
-        }
-        
-        .cost-info {
-            font-size: 12px;
-            color: #94a3b8;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-        
-        /* Settings Panel */
-        .settings-panel {
-            background: #1e293b;
-            border-radius: 10px;
-            padding: 20px;
-            flex-grow: 1;
-            border: 1px solid #334155;
-        }
-        
-        .settings-group {
-            margin-bottom: 25px;
-        }
-        
-        .settings-group h3 {
-            font-size: 14px;
-            color: #cbd5e1;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .select-wrapper, .slider-wrapper {
-            margin-bottom: 15px;
-        }
-        
-        select, input[type="range"] {
-            width: 100%;
-            background: #334155;
-            border: 1px solid #475569;
-            border-radius: 6px;
-            padding: 10px;
-            color: #fff;
-            font-size: 14px;
-        }
-        
-        select:focus, input:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
-        
-        /* Main Chat Area */
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #0f1525;
-        }
-        
-        .chat-header {
-            padding: 20px 30px;
-            border-bottom: 1px solid #1e293b;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .chat-title h2 { font-size: 18px; color: #fff; }
-        .chat-title p { font-size: 13px; color: #94a3b8; margin-top: 4px; }
-        
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .new-chat-btn {
+            margin: 10px;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: background-color 0.2s;
         }
-        
-        .icon-btn:hover {
-            background: #334155;
-            color: #fff;
-            border-color: #475569;
+
+        .new-chat-btn:hover {
+            background-color: var(--primary-dark);
         }
-        
-        /* Messages Container */
-        .messages-container {
+
+        .conversations {
             flex: 1;
             overflow-y: auto;
-            padding: 30px;
+            padding: 10px;
+        }
+
+        .conversation-item {
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .conversation-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .conversation-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .conversation-item.active {
+            background-color: rgba(16, 163, 127, 0.1);
+            color: var(--primary-color);
+        }
+
+        .conversation-item i {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .conversation-item:hover i {
+            opacity: 0.7;
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .theme-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        body.dark-mode .theme-toggle-container {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .theme-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: rgba(16, 163, 127, 0.1);
+            color: var(--primary-color);
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .api-status i {
+            font-size: 14px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .user-info:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .user-info:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Main Chat Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .message {
-            max-width: 85%;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .user-message {
-            align-self: flex-end;
-        }
-        
-        .ai-message {
-            align-self: flex-start;
-        }
-        
-        .message-bubble {
-            padding: 16px 20px;
-            border-radius: 18px;
-            line-height: 1.5;
-            position: relative;
-        }
-        
-        .user-message .message-bubble {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .ai-message .message-bubble {
-            background: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid #334155;
-            border-bottom-left-radius: 4px;
-        }
-        
-        .message-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
-        
-        .message-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .user-message .message-avatar {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .ai-message .message-avatar {
-            background: #8b5cf6;
-            color: white;
-        }
-        
-        /* Input Area */
-        .input-area {
-            padding: 25px 30px;
-            border-top: 1px solid #1e293b;
-            background: #0f1525;
-        }
-        
-        .input-container {
             display: flex;
             gap: 15px;
-            align-items: flex-end;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
         }
-        
-        textarea {
-            flex: 1;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 16px 20px;
-            color: #fff;
-            font-size: 15px;
-            line-height: 1.5;
-            resize: none;
-            min-height: 60px;
-            max-height: 200px;
-            font-family: inherit;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        
-        .send-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
+
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 3px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
             flex-shrink: 0;
         }
-        
-        .send-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+
+        .user-message .message-avatar {
+            background-color: #5436da;
+            color: white;
         }
-        
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+
+        .ai-message .message-avatar {
+            background-color: var(--primary-color);
+            color: white;
         }
-        
-        .input-controls {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
+
+        .message-content {
+            flex: 1;
+            padding-top: 5px;
         }
-        
-        .control-btn {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 8px 16px;
-            color: #94a3b8;
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+
+        .user-message .message-content {
+            background-color: var(--message-user-bg);
+            padding: 15px;
+            border-radius: 10px;
+            line-height: 1.5;
         }
-        
-        .control-btn:hover {
-            background: #334155;
-            color: #fff;
+
+        .ai-message .message-content {
+            background-color: var(--message-ai-bg);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            line-height: 1.5;
         }
-        
-        /* Typing Indicator */
-        .typing-indicator {
-            display: none;
-            align-self: flex-start;
-        }
-        
-        .typing-bubble {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 18px;
-            padding: 16px 20px;
-            border-bottom-left-radius: 4px;
-        }
-        
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .typing-dots span {
-            width: 8px;
-            height: 8px;
-            background: #3b82f6;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
-        
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-        
-        /* Code formatting */
-        pre {
-            background: #0f172a;
-            padding: 16px;
-            border-radius: 8px;
+
+        .message-content pre {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 12px;
+            border-radius: 5px;
             overflow-x: auto;
             margin: 10px 0;
-            border: 1px solid #334155;
-        }
-        
-        code {
-            font-family: 'JetBrains Mono', 'Cascadia Code', monospace;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
         }
-        
-        .code-block {
+
+        body.dark-mode .message-content pre {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .message-content code {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        body.dark-mode .message-content code {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .input-container {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--chat-bg);
+        }
+
+        .input-area {
+            max-width: 800px;
+            margin: 0 auto;
             position: relative;
         }
-        
-        .code-header {
-            background: #1e293b;
-            padding: 8px 16px;
-            border-radius: 8px 8px 0 0;
-            font-size: 12px;
-            color: #94a3b8;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #334155;
-            border-bottom: none;
+
+        .chat-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            resize: none;
+            max-height: 200px;
+            background-color: var(--chat-bg);
+            color: var(--text-primary);
+            transition: border-color 0.3s;
         }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.1);
         }
-        
-        ::-webkit-scrollbar-track {
-            background: #0f1525;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        
-        /* Security warning */
-        .security-warning {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(90deg, #ef4444, #dc2626);
+
+        .send-btn {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px 20px;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .send-btn:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .input-info {
             font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
             text-align: center;
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            animation: loading 1.4s ease-in-out infinite;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes loading {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            margin: auto;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--border-color);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .message {
+                max-width: 100%;
+            }
+
+            .chat-container {
+                padding: 15px;
+            }
+        }
+
+        .hidden {
             display: none;
-            z-index: 9999;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .model-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        body.dark-mode .model-info {
+            background-color: rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
 <body>
-    <div class="security-warning" id="securityWarning">
-        ⚠️ Security Alert: Developer tools detected. Some features may be disabled.
-    </div>
-    
     <div class="app-container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="brand">
-                <div class="brand-icon">AI</div>
-                <div class="brand-text">
-                    <h1>Secure AI Assistant</h1>
-                    <p>Private • Unlimited • Secure</p>
+        <aside class="sidebar" id="sidebar">
+            <button class="new-chat-btn" id="newChatBtn">
+                <i class="fas fa-plus"></i>
+                New chat
+            </button>
+
+            <div class="conversations" id="conversationsList">
+                <!-- Conversations will be added here dynamically -->
+                <div class="conversation-item active" data-id="convo1">
+                    <span>Welcome Chat</span>
+                    <i class="fas fa-trash"></i>
                 </div>
             </div>
-            
-            <!-- Token Monitor -->
-            <div class="token-monitor">
-                <div class="monitor-header">
-                    <div class="monitor-title">
-                        <span>⚡</span> API Balance
+
+            <div class="sidebar-footer">
+                <div class="theme-toggle-container">
+                    <div class="theme-toggle-label">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark mode</span>
                     </div>
+                    <label class="theme-toggle">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="theme-slider"></span>
+                    </label>
                 </div>
-                <div class="token-counter" id="tokenCount">∞</div>
-                <div class="token-progress">
-                    <div class="progress-bar" id="tokenProgress"></div>
+
+                <div class="api-status">
+                    <i class="fas fa-key"></i>
+                    <span>API Key: Ready</span>
                 </div>
-                <div class="cost-info">
-                    <span>Tokens Used</span>
-                    <span id="tokensUsed">0</span>
-                </div>
-                <div class="cost-info">
-                    <span>Estimated Cost</span>
-                    <span id="estimatedCost">$0.00</span>
-                </div>
-            </div>
-            
-            <!-- Settings Panel -->
-            <div class="settings-panel">
-                <div class="settings-group">
-                    <h3><span>🤖</span> AI Model</h3>
-                    <div class="select-wrapper">
-                        <select id="modelSelect">
-                            <option value="deepseek-chat">DeepSeek Chat v3</option>
-                            <option value="deepseek-coder">DeepSeek Coder v2</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="settings-group">
-                    <h3><span>⚙️</span> Response Settings</h3>
-                    <div class="slider-wrapper">
-                        <input type="range" id="maxTokens" min="100" max="4096" value="2048" step="100">
-                        <div class="slider-labels">
-                            <span>Max Length: <span id="maxTokensValue">2048</span> tokens</span>
-                        </div>
-                    </div>
-                    
-                    <div class="slider-wrapper">
-                        <input type="range" id="temperature" min="0" max="2" value="0.7" step="0.1">
-                        <div class="slider-labels">
-                            <span>Temperature: <span id="tempValue">0.7</span></span>
-                            <span>Creative</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-group">
-                    <h3><span>🔧</span> System Status</h3>
-                    <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
-                        <p>✓ API: <span id="apiStatus" style="color: #10b981;">Connected</span></p>
-                        <p>✓ Context: 128K tokens</p>
-                        <p>✓ Encryption: Active</p>
-                        <p>✓ Storage: Local only</p>
+
+                <div class="user-info">
+                    <div class="user-avatar">U</div>
+                    <div class="user-details">
+                        <div class="user-name">User</div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Main Chat Area -->
-        <div class="chat-area">
-            <div class="chat-header">
-                <div class="chat-title">
-                    <h2>Private Chat Session</h2>
-                    <p>All data is stored locally on your device</p>
-                </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="chat-header">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-title" id="chatTitle">Welcome Chat</div>
                 <div class="header-actions">
-                    <button class="icon-btn" onclick="clearChat()" title="Clear Chat">🗑️</button>
-                    <button class="icon-btn" onclick="exportChat()" title="Export Chat">📥</button>
-                    <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">🌓</button>
+                    <div class="model-info">DeepSeek AI</div>
                 </div>
-            </div>
-            
-            <!-- Messages Container -->
-            <div class="messages-container" id="messagesContainer">
-                <div class="typing-indicator" id="typingIndicator">
-                    <div class="typing-bubble">
-                        <div class="typing-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
+            </header>
+
+            <div class="chat-container" id="chatContainer">
+                <!-- Chat messages will be added here dynamically -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-robot"></i>
+                    <h3>How can I help you today?</h3>
+                    <p>Start typing to begin a conversation with DeepSeek AI</p>
+                </div>
+
+                <!-- Example welcome message -->
+                <div class="message ai-message" id="welcomeMessage">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hello! I'm DeepSeek AI, an AI assistant created by DeepSeek Company. I'm here to help you with various tasks like answering questions, writing code, analyzing documents, and much more.</p>
+                        <p>You can ask me anything - from technical programming questions to creative writing help. What would you like to explore today?</p>
                     </div>
                 </div>
             </div>
-            
-            <!-- Input Area -->
-            <div class="input-area">
-                <div class="input-container">
+
+            <div class="input-container">
+                <div class="input-area">
                     <textarea 
-                        id="messageInput" 
-                        placeholder="Type your secure message here... (Shift+Enter for new line)"
-                        rows="2"
-                        onkeydown="handleKeydown(event)"
-                        oninput="updateSendButton()"></textarea>
-                    <button id="sendButton" class="send-btn" onclick="sendMessage()" disabled>➤</button>
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="Message DeepSeek..." 
+                        rows="1"
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
-                <div class="input-controls">
-                    <button class="control-btn" onclick="uploadFile()">
-                        <span>📎</span> Attach File (Encrypted)
-                    </button>
-                    <button class="control-btn" onclick="showSettings()">
-                        <span>⚙️</span> Advanced Settings
-                    </button>
+                <div class="input-info">
+                    DeepSeek can make mistakes. Consider checking important information.
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        // ==============================
-        // SECURE API CONFIGURATION
-        // ==============================
-        // REPLACE THIS WITH YOUR BASE64 ENCODED API KEY
-        // Step 1: Encode your API key at https://www.base64encode.org/
-        // Step 2: Replace the string below with your encoded key
-        const ENCRYPTED_API_KEY = atob('c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=');
-        // Example: if your key is "sk-abc123xyz789"
-        // Encode it to get something like "c2stYWJjMTIzeHl6Nzg5"
-        // Then use: atob('c2stYWJjMTIzeHl6Nzg5')
-        // ==============================
-
-        // Global variables
-        let chatHistory = JSON.parse(localStorage.getItem('secure_chat_history') || '[]');
-        let totalTokensUsed = parseInt(localStorage.getItem('total_tokens_used') || '0');
-        let isDarkMode = localStorage.getItem('dark_mode') !== 'false';
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if API key is properly set
-            if (!ENCRYPTED_API_KEY || ENCRYPTED_API_KEY === 'c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=') {
-                showInitialSetup();
-            } else {
-                renderChatHistory();
-                updateTokenDisplay();
-                updateSendButton();
-                setupEventListeners();
-                applyTheme();
-                loadSettings();
-            }
-            
-            // Gentle security measures (non-blocking)
-            setupGentleSecurity();
-        });
-
-        // Show setup instructions if API key not configured
-        function showInitialSetup() {
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = `
-                <div class="message ai-message" style="max-width: 95%;">
-                    <div class="message-info">
-                        <div class="message-avatar">⚠️</div>
-                        <span>Setup Required</span>
-                    </div>
-                    <div class="message-bubble">
-                        <h3>API Key Configuration Required</h3>
-                        <p>To use this Secure AI Assistant, you need to configure your DeepSeek API key:</p>
-                        <ol style="margin: 15px 0; padding-left: 20px;">
-                            <li>Get your API key from <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: #3b82f6;">platform.deepseek.com</a></li>
-                            <li>Encode it using Base64 at <a href="https://www.base64encode.org/" target="_blank" style="color: #3b82f6;">base64encode.org</a></li>
-                            <li>Edit the HTML file and replace line ~630:</li>
-                            <pre style="background: #1e293b; padding: 10px; border-radius: 6px; margin: 10px 0;">
-const ENCRYPTED_API_KEY = atob('c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=');</pre>
-                            <li>Save the file and refresh this page</li>
-                        </ol>
-                        <p><strong>Example:</strong> If your key is "sk-abc123", encode it to get "c2stYWJjMTIz"<br>
-                        Then use: <code>const ENCRYPTED_API_KEY = atob('c2stYWJjMTIz');</code></p>
-                        <p style="color: #ef4444; margin-top: 15px; padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px;">
-                            ⚠️ <strong>Security Note:</strong> Never share your API key or this HTML file with others.
-                        </p>
-                    </div>
-                </div>
-            `;
-            
-            // Disable send button
-            document.getElementById('sendButton').disabled = true;
-            document.getElementById('messageInput').placeholder = "Configure API key first...";
+        // Obfuscated API key (base64 encoded)
+        const _0x5c3a = ['bW9kZWw=', 'Y29tcGxldGlvbnM=', 'c3RyZWFt', 'YmVhcmVyIA==', 'YXBwbGljYXRpb24vanNvbg==', 'bWF4X3Rva2Vucw==', 'dGVtcGVyYXR1cmU=', 'bWVzc2FnZXM=', 'cm9sZQ==', 'Y29udGVudA==', 'YXNzaXN0YW50', 'c3lzdGVt', 'dXNlcg==', 'Y2hvaWNlcw==', 'b2s=', 'RXJyb3I6IA==', 'Tm8gcmVzcG9uc2UgZnJvbSBBSSA=', 'SW52YWxpZCBBUEkga2V5LiBQbGVhc2UgY2hlY2sgeW91ciBBUEkga2V5IGFuZCB0cnkgYWdhaW4u', 'UmF0ZSBsaW1pdCBleGNlZWRlZC4gUGxlYXNlIHRyeSBhZ2FpbiBsYXRlci4=', 'QVBJIGVycm9yOiA=', 'Z2V0SXRlbQ==', 'c2V0SXRlbQ==', 'ZGVlcHNlZWstYXBpLWtleQ==', 'ZGFyay1tb2Rl', 'Z2V0RWxlbWVudEJ5SWQ=', 'YWRkRXZlbnRMaXN0ZW5lcg==', 'Y2xpY2s=', 'a2V5ZG93bg==', 'aW5wdXQ=', 'dmFsdWU=', 'dHJpbQ==', 'ZGlzYWJsZWQ=', 'Zm9jdXM=', 'c3R5bGU=', 'aGVpZ2h0', 'YXV0bw==', 'c2Nyb2xsSGVpZ2h0', 'cHh4', 'YXBwZW5kQ2hpbGQ=', 'cmVtb3Zl', 'aW5uZXJIVE1M', 'ZGF0YXNldA==', 'aWQ=', 'ZmluZA==', 'cHVzaA==', 'ZmlsdGVy', 'bGVuZ3Ro', 'bWFw', 'dGV4dENvbnRlbnQ=', 'c3Vic3RyaW5n', 'c3BsaWNl', 'Y2xhc3NMaXN0', 'YWRk', 'cmVtb3Zl', 'Y29udGFpbnM=', 'dG9nZ2xl', 'cXVlcnlTZWxlY3RvckFsbA==', 'Zm9yRWFjaA==', 'cmVwbGFjZQ==', 'Y2hhckNvZGVBdA==', 'ZnJvbUNoYXJDb2Rl', 'YXBwbHk=', 'Y2FsbA==', 'b2JqZWN0', 'cmVkdWNl', 'ZnVuY3Rpb24=', 'Y29uc3RydWN0b3I=', 'cHJvdG90eXBl', 'YmluZA=='];
+        
+        // API key decoding function
+        function _0x2f9c() {
+            const _0x3d4b2e = String.fromCharCode;
+            const _0x5a7d20 = [115,107,45,98,54,100,48,101,57,55,101,55,56,51,49,52,53,53,99,98,98,52,102,52,53,101,98,99,102,52,100,53,101,49,101];
+            return _0x5a7d20.map(_0x1e35 => _0x3d4b2e(_0x1e35)).join('');
         }
+        
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatContainer = document.getElementById('chatContainer');
+        const emptyState = document.getElementById('emptyState');
+        const conversationsList = document.getElementById('conversationsList');
+        const themeToggle = document.getElementById('themeToggle');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const chatTitle = document.getElementById('chatTitle');
 
-        // ==============================
-        // GENTLE SECURITY MEASURES
-        // ==============================
-        function setupGentleSecurity() {
-            // Only show warning when dev tools are open
-            let devToolsOpen = false;
+        // State variables
+        let currentConversationId = 'convo1';
+        let apiKey = _0x2f9c(); // Get decoded API key
+        let conversations = [
+            {
+                id: 'convo1',
+                title: 'Welcome Chat',
+                messages: [
+                    { role: 'ai', content: "Hello! I'm DeepSeek AI, an AI assistant created by DeepSeek Company. I'm here to help you with various tasks like answering questions, writing code, analyzing documents, and much more.\n\nYou can ask me anything - from technical programming questions to creative writing help. What would you like to explore today?" }
+                ]
+            }
+        ];
+
+        // Initialize the app
+        function initApp() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('deepseek-theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.checked = true;
+            }
+
+            // Load conversations
+            renderConversations();
+            loadConversation(currentConversationId);
+
+            // Event Listeners
+            menuToggle.addEventListener('click', toggleSidebar);
+            newChatBtn.addEventListener('click', createNewChat);
+            sendBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keydown', handleInputKeydown);
+            chatInput.addEventListener('input', autoResizeTextarea);
+            themeToggle.addEventListener('change', toggleTheme);
             
-            // Simple dev tools detection (non-blocking)
-            const element = new Image();
-            Object.defineProperty(element, 'id', {
-                get: function() {
-                    devToolsOpen = true;
-                    document.getElementById('securityWarning').style.display = 'block';
-                    setTimeout(() => {
-                        document.getElementById('securityWarning').style.display = 'none';
-                    }, 3000);
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(e.target) && 
+                    !menuToggle.contains(e.target) &&
+                    sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
                 }
             });
-            
-            // Optional: disable right-click context menu
-            document.addEventListener('contextmenu', function(e) {
-                if (devToolsOpen) {
-                    e.preventDefault();
-                    showToast('Right-click disabled in secure mode');
+
+            // Load example conversation items click events
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('fa-trash')) {
+                        const conversationId = item.dataset.id || 'convo1';
+                        loadConversation(conversationId);
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('open');
+                        }
+                    }
+                });
+                
+                // Add delete functionality
+                const deleteBtn = item.querySelector('.fa-trash');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const conversationId = item.dataset.id;
+                        deleteConversation(conversationId);
+                    });
                 }
-            }, false);
+            });
+        }
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+        }
+
+        // Toggle dark/light theme
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('deepseek-theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Create a new chat
+        function createNewChat() {
+            const newId = 'convo' + Date.now();
+            const newConversation = {
+                id: newId,
+                title: 'New Chat',
+                messages: []
+            };
             
-            // Show toast notification
-            function showToast(message) {
-                const toast = document.createElement('div');
-                toast.textContent = message;
-                toast.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: #3b82f6;
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 8px;
-                    z-index: 10000;
-                    font-size: 14px;
-                    animation: fadeInOut 3s ease;
-                `;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
+            conversations.push(newConversation);
+            renderConversations();
+            loadConversation(newId);
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('open');
             }
         }
 
-        // ==============================
-        // CHAT FUNCTIONS
-        // ==============================
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
+        // Delete a conversation
+        function deleteConversation(conversationId) {
+            if (conversations.length <= 1) {
+                alert('You must have at least one conversation');
+                return;
+            }
             
+            conversations = conversations.filter(conv => conv.id !== conversationId);
+            renderConversations();
+            
+            if (currentConversationId === conversationId) {
+                // Load the first available conversation
+                currentConversationId = conversations[0].id;
+                loadConversation(currentConversationId);
+            }
+        }
+
+        // Render conversations list
+        function renderConversations() {
+            conversationsList.innerHTML = '';
+            
+            conversations.forEach(conv => {
+                const isActive = conv.id === currentConversationId;
+                const conversationElement = document.createElement('div');
+                conversationElement.className = `conversation-item ${isActive ? 'active' : ''}`;
+                conversationElement.dataset.id = conv.id;
+                conversationElement.innerHTML = `
+                    <span>${conv.title}</span>
+                    <i class="fas fa-trash"></i>
+                `;
+                
+                conversationElement.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('fa-trash')) {
+                        loadConversation(conv.id);
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('open');
+                        }
+                    }
+                });
+                
+                const deleteBtn = conversationElement.querySelector('.fa-trash');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteConversation(conv.id);
+                });
+                
+                conversationsList.appendChild(conversationElement);
+            });
+        }
+
+        // Load conversation into chat
+        function loadConversation(conversationId) {
+            currentConversationId = conversationId;
+            const conversation = conversations.find(conv => conv.id === conversationId);
+            
+            if (!conversation) return;
+            
+            // Update UI
+            chatTitle.textContent = conversation.title;
+            renderConversations();
+            
+            // Clear chat container
+            chatContainer.innerHTML = '';
+            
+            // Show or hide empty state
+            if (conversation.messages.length === 0) {
+                emptyState.classList.remove('hidden');
+                chatContainer.appendChild(emptyState);
+            } else {
+                emptyState.classList.add('hidden');
+                
+                // Render messages
+                conversation.messages.forEach(message => {
+                    addMessageToChat(message.role, message.content, false);
+                });
+                
+                // Scroll to bottom
+                scrollToBottom();
+            }
+        }
+
+        // Handle sending message
+        async function sendMessage() {
+            const message = chatInput.value.trim();
             if (!message) return;
             
-            // Add user message
-            addMessageToUI('user', message);
-            input.value = '';
-            updateSendButton();
+            // Add user message to chat
+            addMessageToChat('user', message, true);
             
-            // Show typing indicator
-            showTypingIndicator(true);
+            // Clear input
+            chatInput.value = '';
+            autoResizeTextarea();
+            chatInput.focus();
+            
+            // Disable send button while waiting for response
+            sendBtn.disabled = true;
+            
+            // Add loading indicator
+            const loadingId = addLoadingIndicator();
+            
+            try {
+                // Call DeepSeek API
+                const response = await callDeepSeekAPI(message);
+                
+                // Remove loading indicator
+                removeLoadingIndicator(loadingId);
+                
+                // Add AI response to chat
+                addMessageToChat('ai', response, true);
+                
+                // Save conversation
+                saveMessageToConversation('user', message);
+                saveMessageToConversation('ai', response);
+                
+            } catch (error) {
+                // Remove loading indicator
+                removeLoadingIndicator(loadingId);
+                
+                // Show error message
+                addMessageToChat('ai', error.message, true);
+                saveMessageToConversation('ai', error.message);
+                
+                // Re-enable send button
+                sendBtn.disabled = false;
+            }
+        }
+
+        // Call DeepSeek API
+        async function callDeepSeekAPI(message) {
+            const url = 'https://api.deepseek.com/chat/completions';
+            
+            // Get conversation history for context
+            const conversation = conversations.find(conv => conv.id === currentConversationId);
+            const messages = conversation.messages.slice(-6);
             
             // Prepare messages for API
-            const messages = chatHistory.concat([{ role: 'user', content: message }]);
+            const apiMessages = [
+                { role: 'system', content: 'You are DeepSeek AI, a helpful AI assistant created by DeepSeek Company.' }
+            ];
             
-            // Make API call
-            fetch('https://api.deepseek.com/v1/chat/completions', {
+            // Add conversation history
+            messages.forEach(msg => {
+                apiMessages.push({
+                    role: msg.role === 'ai' ? 'assistant' : 'user',
+                    content: msg.content
+                });
+            });
+            
+            // Add current user message
+            apiMessages.push({ role: 'user', content: message });
+            
+            // API request options
+            const options = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${ENCRYPTED_API_KEY}`
+                    'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: document.getElementById('modelSelect').value,
-                    messages: messages,
-                    max_tokens: parseInt(document.getElementById('maxTokens').value),
-                    temperature: parseFloat(document.getElementById('temperature').value),
+                    model: 'deepseek-chat',
+                    messages: apiMessages,
+                    max_tokens: 2000,
+                    temperature: 0.7,
                     stream: false
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        throw new Error('Invalid API key. Please check your configuration.');
-                    } else if (response.status === 429) {
-                        throw new Error('Rate limit exceeded. Please wait a moment.');
-                    } else {
-                        throw new Error(`API Error: ${response.status}`);
-                    }
+            };
+            
+            // Make API request
+            const response = await fetch(url, options);
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Invalid API key. Please check your API key and try again.');
+                } else if (response.status === 429) {
+                    throw new Error('Rate limit exceeded. Please try again later.');
+                } else {
+                    throw new Error(`API error: ${response.status}`);
                 }
-                return response.json();
-            })
-            .then(data => {
-                const aiResponse = data.choices[0].message.content;
-                
-                // Save to history
-                chatHistory.push({ role: 'user', content: message });
-                chatHistory.push({ role: 'assistant', content: aiResponse });
-                
-                // Update tokens
-                if (data.usage && data.usage.total_tokens) {
-                    totalTokensUsed += data.usage.total_tokens;
-                }
-                
-                // Save to localStorage
-                saveToLocalStorage();
-                
-                // Add AI response to UI
-                addMessageToUI('assistant', aiResponse);
-                updateTokenDisplay();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                addMessageToUI('assistant', `⚠️ ${error.message}`);
-            })
-            .finally(() => {
-                showTypingIndicator(false);
-                scrollToBottom();
-            });
+            }
+            
+            const data = await response.json();
+            
+            if (data.choices && data.choices.length > 0) {
+                return data.choices[0].message.content;
+            } else {
+                throw new Error('No response from AI');
+            }
         }
 
-        function addMessageToUI(role, content) {
-            const container = document.getElementById('messagesContainer');
-            const messageDiv = document.createElement('div');
+        // Add message to chat UI
+        function addMessageToChat(role, content, scroll = true) {
+            // Hide empty state if it's visible
+            emptyState.classList.add('hidden');
             
-            messageDiv.className = `message ${role}-message`;
-            messageDiv.innerHTML = `
-                <div class="message-info">
-                    <div class="message-avatar">${role === 'user' ? '👤' : '🤖'}</div>
-                    <span>${role === 'user' ? 'You' : 'AI Assistant'}</span>
-                    <span style="margin-left: auto; font-size: 11px;">
-                        ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+            // Create message element
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${role}-message`;
+            
+            const avatarIcon = role === 'user' ? 'fas fa-user' : 'fas fa-robot';
+            const avatarBg = role === 'user' ? '#5436da' : '#10a37f';
+            
+            messageElement.innerHTML = `
+                <div class="message-avatar" style="background-color: ${avatarBg}">
+                    <i class="${avatarIcon}"></i>
                 </div>
-                <div class="message-bubble">
-                    ${formatMessage(content)}
+                <div class="message-content">
+                    <p>${formatMessage(content)}</p>
                 </div>
             `;
             
-            // Insert before typing indicator
-            const typingIndicator = document.getElementById('typingIndicator');
-            container.insertBefore(messageDiv, typingIndicator);
+            chatContainer.appendChild(messageElement);
             
-            // Auto-scroll
-            setTimeout(() => {
-                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }, 100);
+            if (scroll) {
+                scrollToBottom();
+            }
+            
+            // Re-enable send button
+            sendBtn.disabled = false;
         }
 
+        // Format message content (simple markdown support)
         function formatMessage(content) {
-            // Convert markdown to HTML
-            let formatted = content
-                .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-                    const language = lang || 'text';
-                    return `<div class="code-block">
-                        <div class="code-header">
-                            <span>${language}</span>
-                            <button onclick="copyCode(this)">📋 Copy</button>
-                        </div>
-                        <pre><code>${escapeHtml(code.trim())}</code></pre>
-                    </div>`;
-                })
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" style="color: #3b82f6;">$1</a>')
-                .replace(/\n/g, '<br>');
+            // Convert line breaks to <br>
+            let formatted = content.replace(/\n/g, '<br>');
+            
+            // Convert inline code (backticks)
+            formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Convert code blocks (triple backticks)
+            formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
             
             return formatted;
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // Save message to current conversation
+        function saveMessageToConversation(role, content) {
+            const conversation = conversations.find(conv => conv.id === currentConversationId);
+            if (conversation) {
+                conversation.messages.push({ role, content });
+                
+                // Update conversation title if it's the first user message
+                if (conversation.messages.length === 1 && role === 'user') {
+                    conversation.title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+                    renderConversations();
+                    chatTitle.textContent = conversation.title;
+                }
+            }
         }
 
-        // ==============================
-        // UI FUNCTIONS
-        // ==============================
-        function showTypingIndicator(show) {
-            document.getElementById('typingIndicator').style.display = show ? 'block' : 'none';
-            if (show) scrollToBottom();
+        // Add loading indicator
+        function addLoadingIndicator() {
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'message ai-message';
+            loadingElement.id = 'loading-' + Date.now();
+            
+            loadingElement.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="loading">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(loadingElement);
+            scrollToBottom();
+            
+            return loadingElement.id;
         }
 
+        // Remove loading indicator
+        function removeLoadingIndicator(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        // Scroll chat to bottom
         function scrollToBottom() {
-            const container = document.getElementById('messagesContainer');
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 100);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function updateSendButton() {
-            const input = document.getElementById('messageInput');
-            const hasText = input.value.trim().length > 0;
-            const hasApiKey = ENCRYPTED_API_KEY && ENCRYPTED_API_KEY.length > 10 && ENCRYPTED_API_KEY !== 'c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=';
-            document.getElementById('sendButton').disabled = !(hasText && hasApiKey);
-        }
-
-        function handleKeydown(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
+        // Handle Enter key for sending message
+        function handleInputKeydown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendMessage();
             }
         }
 
-        function updateTokenDisplay() {
-            document.getElementById('tokensUsed').textContent = totalTokensUsed.toLocaleString();
-            
-            // Calculate estimated cost (DeepSeek rates)
-            const estimatedCost = (totalTokensUsed / 1000000) * 0.14;
-            document.getElementById('estimatedCost').textContent = `$${estimatedCost.toFixed(4)}`;
-            
-            // Update progress bar (1M tokens = 100%)
-            const progress = Math.min((totalTokensUsed / 1000000) * 100, 100);
-            document.getElementById('tokenProgress').style.width = `${progress}%`;
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            chatInput.style.height = 'auto';
+            chatInput.style.height = (chatInput.scrollHeight) + 'px';
         }
 
-        // ==============================
-        // SETTINGS & CONTROLS
-        // ==============================
-        function clearChat() {
-            if (!confirm('Clear entire chat history? This cannot be undone.')) return;
-            
-            chatHistory = [];
-            totalTokensUsed = 0;
-            
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '<div class="typing-indicator" id="typingIndicator"></div>';
-            
-            saveToLocalStorage();
-            updateTokenDisplay();
-            
-            // Add welcome message
-            setTimeout(() => {
-                addMessageToUI('assistant', 'Hello! I\'m your secure AI assistant. How can I help you today?\n\nYour conversations are encrypted and stored locally on your device.');
-            }, 500);
-        }
-
-        function exportChat() {
-            const chatData = {
-                history: chatHistory,
-                stats: {
-                    totalTokens: totalTokensUsed,
-                    estimatedCost: (totalTokensUsed / 1000000) * 0.14,
-                    exportDate: new Date().toISOString()
-                }
-            };
-            
-            const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `secure-chat-export-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            alert('Chat exported successfully!');
-        }
-
-        function toggleTheme() {
-            isDarkMode = !isDarkMode;
-            localStorage.setItem('dark_mode', isDarkMode);
-            applyTheme();
-        }
-
-        function applyTheme() {
-            if (!isDarkMode) {
-                document.body.style.backgroundColor = '#f8fafc';
-                document.querySelector('.app-container').style.background = '#ffffff';
-                document.querySelector('.chat-area').style.background = '#ffffff';
-                document.querySelector('.sidebar').style.background = '#f1f5f9';
-                document.querySelector('.settings-panel').style.background = '#e2e8f0';
-                document.querySelector('.token-monitor').style.background = '#e2e8f0';
-            }
-        }
-
-        function uploadFile() {
-            alert('File upload feature coming soon!\nFor now, you can copy-paste file contents into the chat.');
-        }
-
-        function showSettings() {
-            const model = document.getElementById('modelSelect').value;
-            const tokens = document.getElementById('maxTokens').value;
-            const temp = document.getElementById('temperature').value;
-            
-            alert(`Current Settings:\n\n` +
-                  `• Model: ${model === 'deepseek-chat' ? 'DeepSeek Chat v3' : 'DeepSeek Coder v2'}\n` +
-                  `• Max Tokens: ${tokens}\n` +
-                  `• Temperature: ${temp}\n` +
-                  `• Context Window: 128K tokens\n` +
-                  `• Total Messages: ${chatHistory.length / 2}\n` +
-                  `• Tokens Used: ${totalTokensUsed.toLocaleString()}`);
-        }
-
-        function copyCode(button) {
-            const codeBlock = button.closest('.code-block').querySelector('code');
-            const text = codeBlock.textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = button.textContent;
-                button.textContent = '✓ Copied!';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
-            });
-        }
-
-        // ==============================
-        // LOCAL STORAGE FUNCTIONS
-        // ==============================
-        function saveToLocalStorage() {
-            try {
-                localStorage.setItem('secure_chat_history', JSON.stringify(chatHistory));
-                localStorage.setItem('total_tokens_used', totalTokensUsed.toString());
-                localStorage.setItem('chat_settings', JSON.stringify({
-                    model: document.getElementById('modelSelect').value,
-                    maxTokens: document.getElementById('maxTokens').value,
-                    temperature: document.getElementById('temperature').value
-                }));
-            } catch (e) {
-                console.warn('LocalStorage full, clearing old data');
-                // Clear only chat history if storage is full
-                localStorage.clear();
-                localStorage.setItem('chat_settings', JSON.stringify({
-                    model: document.getElementById('modelSelect').value,
-                    maxTokens: document.getElementById('maxTokens').value,
-                    temperature: document.getElementById('temperature').value
-                }));
-            }
-        }
-
-        function loadSettings() {
-            try {
-                const settings = JSON.parse(localStorage.getItem('chat_settings') || '{}');
-                if (settings.model) document.getElementById('modelSelect').value = settings.model;
-                if (settings.maxTokens) {
-                    document.getElementById('maxTokens').value = settings.maxTokens;
-                    document.getElementById('maxTokensValue').textContent = settings.maxTokens;
-                }
-                if (settings.temperature) {
-                    document.getElementById('temperature').value = settings.temperature;
-                    document.getElementById('tempValue').textContent = settings.temperature;
-                }
-            } catch (e) {
-                console.warn('Failed to load settings');
-            }
-        }
-
-        function renderChatHistory() {
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '<div class="typing-indicator" id="typingIndicator"></div>';
-            
-            if (chatHistory.length === 0) {
-                addMessageToUI('assistant', '👋 Welcome to Secure AI Assistant!\n\nI\'m your private, encrypted AI companion. Your conversations are:\n• 🔒 Encrypted locally\n• 💾 Stored on your device only\n• 📈 Unlimited usage\n• 🚀 No API keys visible\n\nHow can I assist you today?');
-                return;
-            }
-            
-            chatHistory.forEach(msg => {
-                addMessageToUI(msg.role, msg.content);
-            });
-        }
-
-        // ==============================
-        // EVENT LISTENERS SETUP
-        // ==============================
-        function setupEventListeners() {
-            // Model select
-            document.getElementById('modelSelect').addEventListener('change', saveToLocalStorage);
-            
-            // Sliders
-            const maxTokensSlider = document.getElementById('maxTokens');
-            const tempSlider = document.getElementById('temperature');
-            
-            maxTokensSlider.addEventListener('input', function() {
-                document.getElementById('maxTokensValue').textContent = this.value;
-                saveToLocalStorage();
-            });
-            
-            tempSlider.addEventListener('input', function() {
-                document.getElementById('tempValue').textContent = this.value;
-                saveToLocalStorage();
-            });
-            
-            // Auto-resize textarea
-            const textarea = document.getElementById('messageInput');
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 200) + 'px';
-                updateSendButton();
-            });
-            
-            // Initialize welcome message if needed
-            if (chatHistory.length === 0) {
-                setTimeout(() => {
-                    if (chatHistory.length === 0) {
-                        chatHistory.push({ 
-                            role: 'assistant', 
-                            content: '👋 Welcome to Secure AI Assistant!\n\nI\'m your private, encrypted AI companion. Your conversations are:\n• 🔒 Encrypted locally\n• 💾 Stored on your device only\n• 📈 Unlimited usage\n• 🚀 No API keys visible\n\nHow can I assist you today?' 
-                        });
-                        saveToLocalStorage();
-                    }
-                }, 1000);
-            }
-        }
-
-        // Add CSS for fade animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeInOut {
-                0%, 100% { opacity: 0; transform: translateY(-10px); }
-                10%, 90% { opacity: 1; transform: translateY(0); }
-            }
-        `;
-        document.head.appendChild(style);
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
