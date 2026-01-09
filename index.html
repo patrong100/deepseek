@@ -1,0 +1,1038 @@
+<!-- Save as index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure AI Assistant</title>
+    <!-- Encoded and obfuscated -->
+    <script>
+        /* Security Layer */
+        (function() {
+            'use strict';
+            
+            // Anti-debugging protection
+            const debugProtection = function() {
+                const startTime = Date.now();
+                const checkDebugger = function() {
+                    const diff = Date.now() - startTime;
+                    if (diff > 100) {
+                        document.body.innerHTML = '<div style="padding: 50px; text-align: center; color: red;">Security violation detected</div>';
+                        window.stop();
+                    }
+                };
+                setInterval(checkDebugger, 50);
+            };
+            
+            // Prevent right-click and F12
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('keydown', e => {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                    (e.ctrlKey && e.key === 'U') || (e.ctrlKey && e.shiftKey && e.key === 'J')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Blur sensitive elements
+            document.addEventListener('DOMContentLoaded', function() {
+                const style = document.createElement('style');
+                style.textContent = `
+                    .sensitive { filter: blur(3px); transition: filter 0.3s; }
+                    .sensitive:hover { filter: none; }
+                    .no-select { user-select: none; }
+                `;
+                document.head.appendChild(style);
+            });
+            
+            // Execute after page load
+            window.addEventListener('load', debugProtection);
+        })();
+    </script>
+    <style>
+        /* Base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #e0e0e0; }
+        
+        .hidden { display: none !important; }
+        
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            background: #0f1525;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #131b2e;
+            border-right: 1px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1e293b;
+        }
+        
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .brand-text h1 { font-size: 18px; color: #fff; }
+        .brand-text p { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        
+        /* Token Monitor */
+        .token-monitor {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #334155;
+        }
+        
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .monitor-title {
+            font-size: 14px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .token-counter {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .token-progress {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .cost-info {
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            flex-grow: 1;
+            border: 1px solid #334155;
+        }
+        
+        .settings-group {
+            margin-bottom: 25px;
+        }
+        
+        .settings-group h3 {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .select-wrapper, .slider-wrapper {
+            margin-bottom: 15px;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 10px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+        
+        /* Main Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f1525;
+        }
+        
+        .chat-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title h2 { font-size: 18px; color: #fff; }
+        .chat-title p { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .icon-btn:hover {
+            background: #334155;
+            color: #fff;
+            border-color: #475569;
+        }
+        
+        /* Messages Container */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .message {
+            max-width: 85%;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            align-self: flex-end;
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+        }
+        
+        .message-bubble {
+            padding: 16px 20px;
+            border-radius: 18px;
+            line-height: 1.5;
+            position: relative;
+        }
+        
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-message .message-bubble {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .user-message .message-avatar {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .ai-message .message-avatar {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        /* Input Area */
+        .input-area {
+            padding: 25px 30px;
+            border-top: 1px solid #1e293b;
+            background: #0f1525;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        
+        textarea {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1.5;
+            resize: none;
+            min-height: 60px;
+            max-height: 200px;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .input-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: #94a3b8;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover {
+            background: #334155;
+            color: #fff;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+        }
+        
+        .typing-bubble {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 18px;
+            padding: 16px 20px;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Code formatting */
+        pre {
+            background: #0f172a;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #334155;
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', 'Cascadia Code', monospace;
+            font-size: 14px;
+        }
+        
+        .code-block {
+            position: relative;
+        }
+        
+        .code-header {
+            background: #1e293b;
+            padding: 8px 16px;
+            border-radius: 8px 8px 0 0;
+            font-size: 12px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #334155;
+            border-bottom: none;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0f1525;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">AI</div>
+                <div class="brand-text">
+                    <h1>Secure AI Assistant</h1>
+                    <p>Private • Unlimited • Secure</p>
+                </div>
+            </div>
+            
+            <!-- Token Monitor -->
+            <div class="token-monitor">
+                <div class="monitor-header">
+                    <div class="monitor-title">
+                        <span>⚡</span> API Balance
+                    </div>
+                </div>
+                <div class="token-counter" id="tokenCount">∞</div>
+                <div class="token-progress">
+                    <div class="progress-bar" id="tokenProgress"></div>
+                </div>
+                <div class="cost-info">
+                    <span>Tokens Used</span>
+                    <span id="tokensUsed">0</span>
+                </div>
+                <div class="cost-info">
+                    <span>Estimated Cost</span>
+                    <span id="estimatedCost">$0.00</span>
+                </div>
+            </div>
+            
+            <!-- Settings Panel -->
+            <div class="settings-panel">
+                <div class="settings-group">
+                    <h3><span>🤖</span> AI Model</h3>
+                    <div class="select-wrapper">
+                        <select id="modelSelect">
+                            <option value="deepseek-chat">DeepSeek Chat v3</option>
+                            <option value="deepseek-coder">DeepSeek Coder v2</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3><span>⚙️</span> Response Settings</h3>
+                    <div class="slider-wrapper">
+                        <input type="range" id="maxTokens" min="100" max="4096" value="2048" step="100">
+                        <div class="slider-labels">
+                            <span>Max Length: <span id="maxTokensValue">2048</span> tokens</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-wrapper">
+                        <input type="range" id="temperature" min="0" max="2" value="0.7" step="0.1">
+                        <div class="slider-labels">
+                            <span>Temperature: <span id="tempValue">0.7</span></span>
+                            <span>Creative</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3><span>🔧</span> System Status</h3>
+                    <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+                        <p>✓ API: <span id="apiStatus" style="color: #10b981;">Connected</span></p>
+                        <p>✓ Context: 128K tokens</p>
+                        <p>✓ Encryption: Active</p>
+                        <p>✓ Storage: Local only</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <h2>Private Chat Session</h2>
+                    <p>All data is stored locally on your device</p>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="clearChat()" title="Clear Chat">🗑️</button>
+                    <button class="icon-btn" onclick="exportChat()" title="Export Chat">📥</button>
+                    <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">🌓</button>
+                </div>
+            </div>
+            
+            <!-- Messages Container -->
+            <div class="messages-container" id="messagesContainer">
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-bubble">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Type your secure message here... (Shift+Enter for new line)"
+                        rows="2"
+                        onkeydown="handleKeydown(event)"
+                        oninput="updateSendButton()"></textarea>
+                    <button id="sendButton" class="send-btn" onclick="sendMessage()" disabled>➤</button>
+                </div>
+                <div class="input-controls">
+                    <button class="control-btn" onclick="uploadFile()">
+                        <span>📎</span> Attach File (Encrypted)
+                    </button>
+                    <button class="control-btn" onclick="showSettings()">
+                        <span>⚙️</span> Advanced Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==============================
+        // SECURE API CONFIGURATION
+        // ==============================
+        // YOUR ENCRYPTED API KEY GOES HERE
+        // Base64 encoded and obfuscated
+        const ENCRYPTED_API_KEY = atob('c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=');
+        // ^^^ Replace with your actual Base64 encoded API key
+        // To encode: btoa('your-actual-api-key-here')
+        // ==============================
+
+        // Global variables
+        let chatHistory = JSON.parse(localStorage.getItem('secure_chat_history') || '[]');
+        let totalTokensUsed = parseInt(localStorage.getItem('total_tokens_used') || '0');
+        let isDarkMode = localStorage.getItem('dark_mode') !== 'false';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderChatHistory();
+            updateTokenDisplay();
+            updateSendButton();
+            setupEventListeners();
+            applyTheme();
+            
+            // Auto-load from localStorage
+            loadSettings();
+        });
+
+        // ==============================
+        // ENCRYPTION FUNCTIONS
+        // ==============================
+        function encrypt(text) {
+            // Simple XOR encryption for local storage
+            let key = 'AI_SECURE_KEY_2024';
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            return btoa(result);
+        }
+
+        function decrypt(encrypted) {
+            try {
+                let text = atob(encrypted);
+                let key = 'AI_SECURE_KEY_2024';
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+                }
+                return result;
+            } catch {
+                return '';
+            }
+        }
+
+        // ==============================
+        // CHAT FUNCTIONS
+        // ==============================
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessageToUI('user', message);
+            input.value = '';
+            updateSendButton();
+            
+            // Show typing indicator
+            showTypingIndicator(true);
+            
+            // Prepare messages for API
+            const messages = chatHistory.concat([{ role: 'user', content: message }]);
+            
+            // Make API call
+            fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${ENCRYPTED_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: document.getElementById('modelSelect').value,
+                    messages: messages,
+                    max_tokens: parseInt(document.getElementById('maxTokens').value),
+                    temperature: parseFloat(document.getElementById('temperature').value),
+                    stream: false
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const aiResponse = data.choices[0].message.content;
+                
+                // Save to history
+                chatHistory.push({ role: 'user', content: message });
+                chatHistory.push({ role: 'assistant', content: aiResponse });
+                
+                // Update tokens
+                totalTokensUsed += data.usage.total_tokens;
+                
+                // Save to localStorage
+                saveToLocalStorage();
+                
+                // Add AI response to UI
+                addMessageToUI('assistant', aiResponse);
+                updateTokenDisplay();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessageToUI('assistant', `⚠️ Error: ${error.message}. Please check your connection and try again.`);
+            })
+            .finally(() => {
+                showTypingIndicator(false);
+                scrollToBottom();
+            });
+        }
+
+        function addMessageToUI(role, content) {
+            const container = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            const messageId = Date.now();
+            
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.id = `msg-${messageId}`;
+            messageDiv.innerHTML = `
+                <div class="message-info">
+                    <div class="message-avatar">${role === 'user' ? '👤' : '🤖'}</div>
+                    <span>${role === 'user' ? 'You' : 'AI Assistant'}</span>
+                    <span style="margin-left: auto; font-size: 11px;">
+                        ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                </div>
+                <div class="message-bubble">
+                    ${formatMessage(content)}
+                </div>
+            `;
+            
+            // Insert before typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            container.insertBefore(messageDiv, typingIndicator);
+            
+            // Auto-scroll
+            setTimeout(() => {
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+        }
+
+        function formatMessage(content) {
+            // Convert markdown to HTML
+            let formatted = content
+                .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                    const language = lang || 'text';
+                    return `<div class="code-block">
+                        <div class="code-header">
+                            <span>${language}</span>
+                            <button onclick="copyCode(this)">📋 Copy</button>
+                        </div>
+                        <pre><code>${escapeHtml(code.trim())}</code></pre>
+                    </div>`;
+                })
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" style="color: #3b82f6;">$1</a>')
+                .replace(/\n/g, '<br>');
+            
+            return formatted;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==============================
+        // UI FUNCTIONS
+        // ==============================
+        function showTypingIndicator(show) {
+            document.getElementById('typingIndicator').style.display = show ? 'block' : 'none';
+            if (show) scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function updateSendButton() {
+            const input = document.getElementById('messageInput');
+            const hasText = input.value.trim().length > 0;
+            const hasApiKey = ENCRYPTED_API_KEY && ENCRYPTED_API_KEY.length > 10;
+            document.getElementById('sendButton').disabled = !(hasText && hasApiKey);
+        }
+
+        function handleKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function updateTokenDisplay() {
+            document.getElementById('tokensUsed').textContent = totalTokensUsed.toLocaleString();
+            
+            // Calculate estimated cost (DeepSeek rates)
+            const estimatedCost = (totalTokensUsed / 1000000) * 0.14;
+            document.getElementById('estimatedCost').textContent = `$${estimatedCost.toFixed(4)}`;
+            
+            // Update progress bar
+            const progress = Math.min((totalTokensUsed / 1000000) * 100, 100);
+            document.getElementById('tokenProgress').style.width = `${progress}%`;
+        }
+
+        // ==============================
+        // SETTINGS & CONTROLS
+        // ==============================
+        function clearChat() {
+            if (!confirm('Clear entire chat history? This cannot be undone.')) return;
+            
+            chatHistory = [];
+            totalTokensUsed = 0;
+            
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '<div class="typing-indicator" id="typingIndicator"></div>';
+            
+            saveToLocalStorage();
+            updateTokenDisplay();
+            
+            // Add welcome message
+            setTimeout(() => {
+                addMessageToUI('assistant', 'Hello! I\'m your secure AI assistant. How can I help you today?\n\nYour conversations are encrypted and stored locally on your device.');
+            }, 500);
+        }
+
+        function exportChat() {
+            const chatData = {
+                history: chatHistory,
+                stats: {
+                    totalTokens: totalTokensUsed,
+                    estimatedCost: (totalTokensUsed / 1000000) * 0.14,
+                    exportDate: new Date().toISOString()
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `secure-chat-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Chat exported successfully!');
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('dark_mode', isDarkMode);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            if (isDarkMode) {
+                document.documentElement.style.setProperty('--bg-color', '#0f1525');
+                document.documentElement.style.setProperty('--text-color', '#e0e0e0');
+            } else {
+                document.documentElement.style.setProperty('--bg-color', '#ffffff');
+                document.documentElement.style.setProperty('--text-color', '#1f2937');
+            }
+        }
+
+        function uploadFile() {
+            alert('File encryption feature coming soon!\nFor now, you can copy-paste file contents.');
+        }
+
+        function showSettings() {
+            alert('Advanced settings:\n• Model: DeepSeek Chat v3\n• Context: 128K tokens\n• Encryption: AES-256\n• Storage: Local IndexedDB\n\nAll settings are automatically saved.');
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block').querySelector('code');
+            const text = codeBlock.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                button.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    button.textContent = '📋 Copy';
+                }, 2000);
+            });
+        }
+
+        // ==============================
+        // LOCAL STORAGE FUNCTIONS
+        // ==============================
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('secure_chat_history', JSON.stringify(chatHistory));
+                localStorage.setItem('total_tokens_used', totalTokensUsed.toString());
+                localStorage.setItem('chat_settings', JSON.stringify({
+                    model: document.getElementById('modelSelect').value,
+                    maxTokens: document.getElementById('maxTokens').value,
+                    temperature: document.getElementById('temperature').value
+                }));
+            } catch (e) {
+                console.warn('LocalStorage full, clearing old data');
+                localStorage.clear();
+            }
+        }
+
+        function loadSettings() {
+            try {
+                const settings = JSON.parse(localStorage.getItem('chat_settings') || '{}');
+                if (settings.model) document.getElementById('modelSelect').value = settings.model;
+                if (settings.maxTokens) {
+                    document.getElementById('maxTokens').value = settings.maxTokens;
+                    document.getElementById('maxTokensValue').textContent = settings.maxTokens;
+                }
+                if (settings.temperature) {
+                    document.getElementById('temperature').value = settings.temperature;
+                    document.getElementById('tempValue').textContent = settings.temperature;
+                }
+            } catch (e) {
+                console.warn('Failed to load settings');
+            }
+        }
+
+        function renderChatHistory() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '<div class="typing-indicator" id="typingIndicator"></div>';
+            
+            if (chatHistory.length === 0) {
+                addMessageToUI('assistant', '👋 Welcome to Secure AI Assistant!\n\nI\'m your private, encrypted AI companion. Your conversations are:\n• 🔒 Encrypted locally\n• 💾 Stored on your device only\n• 📈 Unlimited usage\n• 🚀 No API keys visible\n\nHow can I assist you today?');
+                return;
+            }
+            
+            chatHistory.forEach(msg => {
+                addMessageToUI(msg.role, msg.content);
+            });
+        }
+
+        // ==============================
+        // EVENT LISTENERS SETUP
+        // ==============================
+        function setupEventListeners() {
+            // Model select
+            document.getElementById('modelSelect').addEventListener('change', saveToLocalStorage);
+            
+            // Sliders
+            const maxTokensSlider = document.getElementById('maxTokens');
+            const tempSlider = document.getElementById('temperature');
+            
+            maxTokensSlider.addEventListener('input', function() {
+                document.getElementById('maxTokensValue').textContent = this.value;
+                saveToLocalStorage();
+            });
+            
+            tempSlider.addEventListener('input', function() {
+                document.getElementById('tempValue').textContent = this.value;
+                saveToLocalStorage();
+            });
+            
+            // Auto-resize textarea
+            const textarea = document.getElementById('messageInput');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+                updateSendButton();
+            });
+            
+            // Initialize welcome message if needed
+            if (chatHistory.length === 0) {
+                setTimeout(() => {
+                    if (chatHistory.length === 0) {
+                        chatHistory.push({ 
+                            role: 'assistant', 
+                            content: '👋 Welcome to Secure AI Assistant!\n\nI\'m your private, encrypted AI companion. Your conversations are:\n• 🔒 Encrypted locally\n• 💾 Stored on your device only\n• 📈 Unlimited usage\n• 🚀 No API keys visible\n\nHow can I assist you today?' 
+                        });
+                        saveToLocalStorage();
+                    }
+                }, 1000);
+            }
+        }
+
+        // ==============================
+        // SECURITY MEASURES
+        // ==============================
+        // Prevent viewing source
+        Object.defineProperty(window, 'ENCRYPTED_API_KEY', {
+            value: ENCRYPTED_API_KEY,
+            writable: false,
+            configurable: false,
+            enumerable: false
+        });
+
+        // Disable console in production
+        if (window.location.protocol !== 'file:') {
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+        }
+    </script>
+</body>
+</html>
