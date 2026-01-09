@@ -1,60 +1,13 @@
-<!-- Save as index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure AI Assistant</title>
-    <!-- Encoded and obfuscated -->
-    <script>
-        /* Security Layer */
-        (function() {
-            'use strict';
-            
-            // Anti-debugging protection
-            const debugProtection = function() {
-                const startTime = Date.now();
-                const checkDebugger = function() {
-                    const diff = Date.now() - startTime;
-                    if (diff > 100) {
-                        document.body.innerHTML = '<div style="padding: 50px; text-align: center; color: red;">Security violation detected</div>';
-                        window.stop();
-                    }
-                };
-                setInterval(checkDebugger, 50);
-            };
-            
-            // Prevent right-click and F12
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.addEventListener('keydown', e => {
-                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                    (e.ctrlKey && e.key === 'U') || (e.ctrlKey && e.shiftKey && e.key === 'J')) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-            
-            // Blur sensitive elements
-            document.addEventListener('DOMContentLoaded', function() {
-                const style = document.createElement('style');
-                style.textContent = `
-                    .sensitive { filter: blur(3px); transition: filter 0.3s; }
-                    .sensitive:hover { filter: none; }
-                    .no-select { user-select: none; }
-                `;
-                document.head.appendChild(style);
-            });
-            
-            // Execute after page load
-            window.addEventListener('load', debugProtection);
-        })();
-    </script>
     <style>
         /* Base styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #e0e0e0; }
-        
-        .hidden { display: none !important; }
         
         .app-container {
             max-width: 1400px;
@@ -495,9 +448,28 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
+        
+        /* Security warning */
+        .security-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: white;
+            padding: 10px 20px;
+            font-size: 12px;
+            text-align: center;
+            display: none;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
+    <div class="security-warning" id="securityWarning">
+        ⚠️ Security Alert: Developer tools detected. Some features may be disabled.
+    </div>
+    
     <div class="app-container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -626,11 +598,13 @@
         // ==============================
         // SECURE API CONFIGURATION
         // ==============================
-        // YOUR ENCRYPTED API KEY GOES HERE
-        // Base64 encoded and obfuscated
+        // REPLACE THIS WITH YOUR BASE64 ENCODED API KEY
+        // Step 1: Encode your API key at https://www.base64encode.org/
+        // Step 2: Replace the string below with your encoded key
         const ENCRYPTED_API_KEY = atob('c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=');
-        // ^^^ Replace with your actual Base64 encoded API key
-        // To encode: btoa('your-actual-api-key-here')
+        // Example: if your key is "sk-abc123xyz789"
+        // Encode it to get something like "c2stYWJjMTIzeHl6Nzg5"
+        // Then use: atob('c2stYWJjMTIzeHl6Nzg5')
         // ==============================
 
         // Global variables
@@ -640,40 +614,101 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            renderChatHistory();
-            updateTokenDisplay();
-            updateSendButton();
-            setupEventListeners();
-            applyTheme();
+            // Check if API key is properly set
+            if (!ENCRYPTED_API_KEY || ENCRYPTED_API_KEY === 'c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=') {
+                showInitialSetup();
+            } else {
+                renderChatHistory();
+                updateTokenDisplay();
+                updateSendButton();
+                setupEventListeners();
+                applyTheme();
+                loadSettings();
+            }
             
-            // Auto-load from localStorage
-            loadSettings();
+            // Gentle security measures (non-blocking)
+            setupGentleSecurity();
         });
 
-        // ==============================
-        // ENCRYPTION FUNCTIONS
-        // ==============================
-        function encrypt(text) {
-            // Simple XOR encryption for local storage
-            let key = 'AI_SECURE_KEY_2024';
-            let result = '';
-            for (let i = 0; i < text.length; i++) {
-                result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            }
-            return btoa(result);
+        // Show setup instructions if API key not configured
+        function showInitialSetup() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = `
+                <div class="message ai-message" style="max-width: 95%;">
+                    <div class="message-info">
+                        <div class="message-avatar">⚠️</div>
+                        <span>Setup Required</span>
+                    </div>
+                    <div class="message-bubble">
+                        <h3>API Key Configuration Required</h3>
+                        <p>To use this Secure AI Assistant, you need to configure your DeepSeek API key:</p>
+                        <ol style="margin: 15px 0; padding-left: 20px;">
+                            <li>Get your API key from <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: #3b82f6;">platform.deepseek.com</a></li>
+                            <li>Encode it using Base64 at <a href="https://www.base64encode.org/" target="_blank" style="color: #3b82f6;">base64encode.org</a></li>
+                            <li>Edit the HTML file and replace line ~630:</li>
+                            <pre style="background: #1e293b; padding: 10px; border-radius: 6px; margin: 10px 0;">
+const ENCRYPTED_API_KEY = atob('c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=');</pre>
+                            <li>Save the file and refresh this page</li>
+                        </ol>
+                        <p><strong>Example:</strong> If your key is "sk-abc123", encode it to get "c2stYWJjMTIz"<br>
+                        Then use: <code>const ENCRYPTED_API_KEY = atob('c2stYWJjMTIz');</code></p>
+                        <p style="color: #ef4444; margin-top: 15px; padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px;">
+                            ⚠️ <strong>Security Note:</strong> Never share your API key or this HTML file with others.
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            // Disable send button
+            document.getElementById('sendButton').disabled = true;
+            document.getElementById('messageInput').placeholder = "Configure API key first...";
         }
 
-        function decrypt(encrypted) {
-            try {
-                let text = atob(encrypted);
-                let key = 'AI_SECURE_KEY_2024';
-                let result = '';
-                for (let i = 0; i < text.length; i++) {
-                    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        // ==============================
+        // GENTLE SECURITY MEASURES
+        // ==============================
+        function setupGentleSecurity() {
+            // Only show warning when dev tools are open
+            let devToolsOpen = false;
+            
+            // Simple dev tools detection (non-blocking)
+            const element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function() {
+                    devToolsOpen = true;
+                    document.getElementById('securityWarning').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('securityWarning').style.display = 'none';
+                    }, 3000);
                 }
-                return result;
-            } catch {
-                return '';
+            });
+            
+            // Optional: disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                if (devToolsOpen) {
+                    e.preventDefault();
+                    showToast('Right-click disabled in secure mode');
+                }
+            }, false);
+            
+            // Show toast notification
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #3b82f6;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    font-size: 14px;
+                    animation: fadeInOut 3s ease;
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
             }
         }
 
@@ -714,7 +749,13 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
+                    if (response.status === 401) {
+                        throw new Error('Invalid API key. Please check your configuration.');
+                    } else if (response.status === 429) {
+                        throw new Error('Rate limit exceeded. Please wait a moment.');
+                    } else {
+                        throw new Error(`API Error: ${response.status}`);
+                    }
                 }
                 return response.json();
             })
@@ -726,7 +767,9 @@
                 chatHistory.push({ role: 'assistant', content: aiResponse });
                 
                 // Update tokens
-                totalTokensUsed += data.usage.total_tokens;
+                if (data.usage && data.usage.total_tokens) {
+                    totalTokensUsed += data.usage.total_tokens;
+                }
                 
                 // Save to localStorage
                 saveToLocalStorage();
@@ -737,7 +780,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                addMessageToUI('assistant', `⚠️ Error: ${error.message}. Please check your connection and try again.`);
+                addMessageToUI('assistant', `⚠️ ${error.message}`);
             })
             .finally(() => {
                 showTypingIndicator(false);
@@ -748,10 +791,8 @@
         function addMessageToUI(role, content) {
             const container = document.getElementById('messagesContainer');
             const messageDiv = document.createElement('div');
-            const messageId = Date.now();
             
             messageDiv.className = `message ${role}-message`;
-            messageDiv.id = `msg-${messageId}`;
             messageDiv.innerHTML = `
                 <div class="message-info">
                     <div class="message-avatar">${role === 'user' ? '👤' : '🤖'}</div>
@@ -822,7 +863,7 @@
         function updateSendButton() {
             const input = document.getElementById('messageInput');
             const hasText = input.value.trim().length > 0;
-            const hasApiKey = ENCRYPTED_API_KEY && ENCRYPTED_API_KEY.length > 10;
+            const hasApiKey = ENCRYPTED_API_KEY && ENCRYPTED_API_KEY.length > 10 && ENCRYPTED_API_KEY !== 'c2stMDFlOTJmMTNlOGRhNGEzYTg2ODliZTllZmRiYThiOTU=';
             document.getElementById('sendButton').disabled = !(hasText && hasApiKey);
         }
 
@@ -840,7 +881,7 @@
             const estimatedCost = (totalTokensUsed / 1000000) * 0.14;
             document.getElementById('estimatedCost').textContent = `$${estimatedCost.toFixed(4)}`;
             
-            // Update progress bar
+            // Update progress bar (1M tokens = 100%)
             const progress = Math.min((totalTokensUsed / 1000000) * 100, 100);
             document.getElementById('tokenProgress').style.width = `${progress}%`;
         }
@@ -896,30 +937,42 @@
         }
 
         function applyTheme() {
-            if (isDarkMode) {
-                document.documentElement.style.setProperty('--bg-color', '#0f1525');
-                document.documentElement.style.setProperty('--text-color', '#e0e0e0');
-            } else {
-                document.documentElement.style.setProperty('--bg-color', '#ffffff');
-                document.documentElement.style.setProperty('--text-color', '#1f2937');
+            if (!isDarkMode) {
+                document.body.style.backgroundColor = '#f8fafc';
+                document.querySelector('.app-container').style.background = '#ffffff';
+                document.querySelector('.chat-area').style.background = '#ffffff';
+                document.querySelector('.sidebar').style.background = '#f1f5f9';
+                document.querySelector('.settings-panel').style.background = '#e2e8f0';
+                document.querySelector('.token-monitor').style.background = '#e2e8f0';
             }
         }
 
         function uploadFile() {
-            alert('File encryption feature coming soon!\nFor now, you can copy-paste file contents.');
+            alert('File upload feature coming soon!\nFor now, you can copy-paste file contents into the chat.');
         }
 
         function showSettings() {
-            alert('Advanced settings:\n• Model: DeepSeek Chat v3\n• Context: 128K tokens\n• Encryption: AES-256\n• Storage: Local IndexedDB\n\nAll settings are automatically saved.');
+            const model = document.getElementById('modelSelect').value;
+            const tokens = document.getElementById('maxTokens').value;
+            const temp = document.getElementById('temperature').value;
+            
+            alert(`Current Settings:\n\n` +
+                  `• Model: ${model === 'deepseek-chat' ? 'DeepSeek Chat v3' : 'DeepSeek Coder v2'}\n` +
+                  `• Max Tokens: ${tokens}\n` +
+                  `• Temperature: ${temp}\n` +
+                  `• Context Window: 128K tokens\n` +
+                  `• Total Messages: ${chatHistory.length / 2}\n` +
+                  `• Tokens Used: ${totalTokensUsed.toLocaleString()}`);
         }
 
         function copyCode(button) {
             const codeBlock = button.closest('.code-block').querySelector('code');
             const text = codeBlock.textContent;
             navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
                 button.textContent = '✓ Copied!';
                 setTimeout(() => {
-                    button.textContent = '📋 Copy';
+                    button.textContent = originalText;
                 }, 2000);
             });
         }
@@ -938,7 +991,13 @@
                 }));
             } catch (e) {
                 console.warn('LocalStorage full, clearing old data');
+                // Clear only chat history if storage is full
                 localStorage.clear();
+                localStorage.setItem('chat_settings', JSON.stringify({
+                    model: document.getElementById('modelSelect').value,
+                    maxTokens: document.getElementById('maxTokens').value,
+                    temperature: document.getElementById('temperature').value
+                }));
             }
         }
 
@@ -1016,23 +1075,15 @@
             }
         }
 
-        // ==============================
-        // SECURITY MEASURES
-        // ==============================
-        // Prevent viewing source
-        Object.defineProperty(window, 'ENCRYPTED_API_KEY', {
-            value: ENCRYPTED_API_KEY,
-            writable: false,
-            configurable: false,
-            enumerable: false
-        });
-
-        // Disable console in production
-        if (window.location.protocol !== 'file:') {
-            console.log = function() {};
-            console.warn = function() {};
-            console.error = function() {};
-        }
+        // Add CSS for fade animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; transform: translateY(-10px); }
+                10%, 90% { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
